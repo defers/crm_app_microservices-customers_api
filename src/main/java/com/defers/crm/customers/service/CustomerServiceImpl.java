@@ -1,5 +1,7 @@
 package com.defers.crm.customers.service;
 
+import com.defers.crm.customers.dto.CustomerDTO;
+import com.defers.crm.customers.dto.dtomapper.CustomerMapper;
 import com.defers.crm.customers.entity.Customer;
 import com.defers.crm.customers.exception.EntityNotFoundException;
 import com.defers.crm.customers.repository.CustomerRepository;
@@ -17,30 +19,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RefreshScope
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
     private final Clock clock;
-    @Autowired
     private final CustomerRepository customerRepository;
-    @Autowired
     private final MessageSource messageSource;
     private final Integer defaultPageNumber;
     private final Integer defaultNumberOnPage;
+    private final CustomerMapper customerMapper;
 
+    @Autowired
     public CustomerServiceImpl(Clock clock,
                                CustomerRepository customerRepository,
                                MessageSource messageSource,
                                @Value("${app.data.default-page-number}") Integer defaultPageNumber,
-                               @Value("${app.data.default-number-on-page}") Integer defaultNumberOnPage) {
+                               @Value("${app.data.default-number-on-page}") Integer defaultNumberOnPage,
+                               CustomerMapper customerMapper) {
         this.clock = clock;
         this.customerRepository = customerRepository;
         this.messageSource = messageSource;
         this.defaultPageNumber = defaultPageNumber;
         this.defaultNumberOnPage = defaultNumberOnPage;
+        this.customerMapper = customerMapper;
     }
 
     @Override
@@ -59,6 +63,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<CustomerDTO> findAllDTO(Integer pageNumber,
+                                        Integer numberOnPage) {
+        List<Customer> customers = findAll(pageNumber, numberOnPage);
+        return customers.stream()
+                .map(customer -> customerMapper.toDTO(customer, new CustomerDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Customer findById(String id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> {
@@ -69,6 +82,12 @@ public class CustomerServiceImpl implements CustomerService {
                             return new EntityNotFoundException(msg);
                         }
                 );
+    }
+
+    @Override
+    public CustomerDTO findDTOById(String id) {
+        Customer customer = findById(id);
+        return customerMapper.toDTO(customer, new CustomerDTO());
     }
 
     @Override
@@ -85,9 +104,21 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public CustomerDTO findDTOByName(String name) {
+        return customerMapper.toDTO(findByName(name), new CustomerDTO());
+    }
+
+    @Override
     public Customer save(Customer customer) {
         customer.setCreatedDate(LocalDateTime.now(clock));
         return customerRepository.save(customer);
+    }
+
+    @Override
+    public CustomerDTO saveDTO(CustomerDTO customerDTO) {
+        Customer customer = customerMapper.toEntity(customerDTO, new Customer());
+        customer = save(customer);
+        return customerMapper.toDTO(customer, new CustomerDTO());
     }
 
     @Override

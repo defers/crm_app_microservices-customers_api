@@ -28,7 +28,7 @@ server:
 logging:
   level:
     org:
-      springframework: debug
+      springframework: info
 app:
   all-methods-log:
     enabled: true

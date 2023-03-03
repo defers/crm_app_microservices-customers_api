@@ -1,12 +1,11 @@
 package com.defers.crm.customers.controller;
 
-import com.defers.crm.customers.entity.Customer;
-import com.defers.crm.customers.enums.CustomerType;
+import com.defers.crm.customers.dto.CustomerDTO;
 import com.defers.crm.customers.exception.ConstraintErrorException;
 import com.defers.crm.customers.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +20,16 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping()
-    ResponseEntity<List<Customer>> findAll(@RequestParam(name = "pagenumber", required = false) Integer pageNumber,
-                           @RequestParam(name = "numberonpage", required = false) Integer numberOnPage) {
-        return ResponseEntity.ok(customerService.findAll(pageNumber, numberOnPage));
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<CustomerDTO>> findAll(@RequestParam(name = "pagenumber", required = false) Integer pageNumber,
+                                              @RequestParam(name = "numberonpage", required = false) Integer numberOnPage) {
+        return ResponseEntity.ok(customerService.findAllDTO(pageNumber, numberOnPage));
     }
 
     @PostMapping
-    Customer save(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
+    CustomerDTO save(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         checkErrors(bindingResult);
-        return customerService.save(customer);
+        return customerService.saveDTO(customerDTO);
     }
 
     private void checkErrors(BindingResult bindingResult) {
@@ -39,13 +38,13 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/{id}")
-    Customer findById(@PathVariable String id) {
-        return customerService.findById(id);
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<CustomerDTO> findById(@PathVariable String id) {
+        return ResponseEntity.ok(customerService.findDTOById(id));
     }
 
     @GetMapping("/search")
-    Customer findByName(@RequestParam String name) {
-        return customerService.findByName(name);
+    CustomerDTO findByName(@RequestParam String name) {
+        return customerService.findDTOByName(name);
     }
 }

@@ -4,7 +4,6 @@ import com.defers.crm.customers.dto.ApiError;
 import com.defers.crm.customers.dto.ApiErrorResponse;
 import com.defers.crm.customers.enums.ApiResponseStatus;
 import com.defers.crm.customers.exception.ConstraintErrorException;
-import com.defers.crm.customers.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +31,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     private MessageSource messageSource;
 
     @ExceptionHandler(value = {ConstraintErrorException.class})
-    public ResponseEntity<Object> exceptionHandler(ConstraintErrorException ex, WebRequest request) throws Exception {
+    public ResponseEntity<Object> exceptionConstraintHandler(ConstraintErrorException ex, WebRequest request) throws Exception {
         List<ApiError> apiErrors = new ArrayList<>();
         ex.getBindingResult().getAllErrors()
                 .stream()
@@ -61,4 +58,15 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
             }
         }
     }
+
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ResponseEntity<Object> exceptionHandler(RuntimeException ex, WebRequest request) throws Exception {
+
+        ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+                .message(ex.getMessage())
+                .apiResponseStatus(ApiResponseStatus.ERROR)
+                .build();
+        return handleExceptionInternal(ex, apiErrorResponse, HttpHeaders.EMPTY, HttpStatus.BAD_REQUEST, request);
+    }
+
 }
