@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  application:
+    name: crm_customers
+  config:
+    activate:
+      on-profile: dev
+    import: configserver:http://localhost:3500
+  main:
+    allow-circular-references: true
+  cloud:
+    config:
+      fail-fast: true
+      name: "crm_customers"
+  data:
+    redis:
+      url: redis://localhost:6379
+      password: admin
+server:
+  port: 3501
+  servlet:
+    context-path: /api
+logging:
+  level:
+    org:
+      springframework: debug
+app:
+  all-methods-log:
+    enabled: true
