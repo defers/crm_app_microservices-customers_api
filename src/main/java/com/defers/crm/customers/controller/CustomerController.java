@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,9 +28,15 @@ public class CustomerController {
     }
 
     @PostMapping
-    CustomerDTO save(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
+    ResponseEntity<CustomerDTO> save(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         checkErrors(bindingResult);
-        return customerService.saveDTO(customerDTO);
+        customerDTO = customerService.saveDTO(customerDTO);
+        return ResponseEntity.created(
+                ServletUriComponentsBuilder.fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(customerDTO.getId())
+                        .toUri()
+        ).body(customerDTO);
     }
 
     private void checkErrors(BindingResult bindingResult) {
@@ -43,8 +50,8 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.findDTOById(id));
     }
 
-    @GetMapping("/search")
-    CustomerDTO findByName(@RequestParam String name) {
-        return customerService.findDTOByName(name);
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<CustomerDTO> findByName(@RequestParam String name) {
+        return ResponseEntity.ok(customerService.findDTOByName(name));
     }
 }
