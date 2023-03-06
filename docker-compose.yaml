@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  crm_customers:
+    container_name: crm_customers
+    build:
+      dockerfile: Dockerfile
+    image: customers:latest
+    ports:
+      - 3501:3501
+    depends_on:
+      - redis-db
+    networks:
+      - crm-network
   redis-db:
     image: redis:latest
     restart: always
@@ -11,3 +22,6 @@ services:
 volumes:
   redis:
     driver: local
+networks:
+  crm-network:
+    driver: bridge
