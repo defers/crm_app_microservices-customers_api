@@ -1,6 +1,7 @@
 package com.defers.crm.customers.dto;
 
 import com.defers.crm.customers.enums.CustomerType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+@JsonPropertyOrder(value = {"id, type, name, createdDate"})
 @Builder
 @Data
 @AllArgsConstructor

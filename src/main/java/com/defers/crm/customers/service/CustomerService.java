@@ -16,5 +16,4 @@ public interface CustomerService {
     CustomerDTO saveDTO(CustomerDTO customer);
     Customer update(String id, Customer customer);
     void setDeleteById(String id);
-
 }

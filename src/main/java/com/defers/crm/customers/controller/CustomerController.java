@@ -1,8 +1,8 @@
 package com.defers.crm.customers.controller;
 
 import com.defers.crm.customers.dto.CustomerDTO;
-import com.defers.crm.customers.exception.ConstraintErrorException;
 import com.defers.crm.customers.service.CustomerService;
+import com.defers.crm.customers.util.ValidatorUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,7 +29,7 @@ public class CustomerController {
 
     @PostMapping
     ResponseEntity<CustomerDTO> save(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
-        checkErrors(bindingResult);
+        ValidatorUtils.checkErrors(bindingResult);
         customerDTO = customerService.saveDTO(customerDTO);
         return ResponseEntity.created(
                 ServletUriComponentsBuilder.fromCurrentRequest()
@@ -37,12 +37,6 @@ public class CustomerController {
                         .buildAndExpand(customerDTO.getId())
                         .toUri()
         ).body(customerDTO);
-    }
-
-    private void checkErrors(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ConstraintErrorException(bindingResult);
-        }
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

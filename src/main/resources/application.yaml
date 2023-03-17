@@ -21,6 +21,14 @@ spring:
     redis:
       url: redis://localhost:6379
       password: admin
+  kafka:
+    bootstrap-servers: http://localhost:9092
+    producer:
+      acks: all
+      bootstrap-servers: http://localhost:9092
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 eureka:
   client:
     register-with-eureka: true
@@ -38,3 +46,6 @@ logging:
 app:
   all-methods-log:
     enabled: true
+  messaging:
+    enabled: true
+

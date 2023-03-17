@@ -13,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RefreshScope
+@Transactional(readOnly = true)
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
@@ -108,6 +110,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.toDTO(findByName(name), new CustomerDTO());
     }
 
+    @Transactional
     @Override
     public Customer save(Customer customer) {
         customer.setCreatedDate(LocalDateTime.now(clock));
@@ -121,6 +124,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.toDTO(customer, new CustomerDTO());
     }
 
+    @Transactional
     @Override
     public Customer update(String id, Customer customer) {
         return null;

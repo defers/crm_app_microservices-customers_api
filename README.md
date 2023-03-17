@@ -4,4 +4,5 @@
    1. Spring web rest
    2. Redis data
    3. Map struct mapper
+   4. kafka
 
