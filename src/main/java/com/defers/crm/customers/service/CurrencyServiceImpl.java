@@ -76,7 +76,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     public Currency save(Currency currency) {
         currency.setCreatedDate(LocalDateTime.now(clock));
         Currency currencySaved = currencyRepository.save(currency);
-        currencyKafkaSender.send();
+        currencyKafkaSender.send(currencySaved);
         return currencySaved;
     }
 }

@@ -24,6 +24,12 @@ spring:
   kafka:
     bootstrap-servers: http://localhost:9092
     producer:
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: true
       acks: all
       bootstrap-servers: http://localhost:9092
       retries: 3
@@ -48,4 +54,3 @@ app:
     enabled: true
   messaging:
     enabled: true
-
